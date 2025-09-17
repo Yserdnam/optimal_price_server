@@ -1,4 +1,4 @@
-const Quartier = require("../models/Quartier");
+const Quartier = require("../models/quartier");
 
 // Liste des quartiers
 exports.listQuartiers = async (req, res) => {

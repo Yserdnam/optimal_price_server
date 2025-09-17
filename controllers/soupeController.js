@@ -1,4 +1,4 @@
-const Soupe = require("../models/Soupe");
+const Soupe = require("../models/soupe");
 const Ingredient = require("../models/ingredient");
 
 exports.listSoupes = async (req, res) => {

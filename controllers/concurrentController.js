@@ -1,5 +1,5 @@
-const Concurrent = require('../models/Concurrent');
-const Soupe = require('../models/Soupe');
+const Concurrent = require('../models/concurrent');
+const Soupe = require('../models/soupe');
 
 exports.list = async (req, res) => {
   const concurrents = await Concurrent.find();

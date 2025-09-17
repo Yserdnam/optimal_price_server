@@ -1,4 +1,4 @@
-const Pricing = require("../models/Pricing");
+const Pricing = require("../models/pricing");
 
 // Convertir les pourcentages en décimales
 function convertPercentagesToDecimals(body) {

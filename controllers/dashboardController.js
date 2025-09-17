@@ -1,6 +1,6 @@
-const PrixOptimaux = require("../models/PrixOptimaux");
-const Concurrent = require("../models/Concurrent");
-const Pricing = require("../models/Pricing"); 
+const PrixOptimaux = require("../models/prixOptimaux");
+const Concurrent = require("../models/concurrent");
+const Pricing = require("../models/pricing"); 
 
 exports.showDashboard = async (req, res) => {
     try {
