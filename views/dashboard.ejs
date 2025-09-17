@@ -1,0 +1,453 @@
+<%- include('./header', { title: 'Dashboard' }) %>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">🍲 Dashboard Pricing Stratégique</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- KPI Header -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-primary"><%= stats.total_soupes %></div>
+                    <div class="stat-label">Types de Soupes</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-info"><%= stats.total_quartiers %></div>
+                    <div class="stat-label">Quartiers Analysés</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-success"><%= stats.marge_moyenne %>%</div>
+                    <div class="stat-label">Marge Moyenne</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-warning"><%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(stats.prix_optimal_moyen) %> Ar</div>
+                    <div class="stat-label">Prix Optimal Moyen</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-danger"><%= stats.total_concurrents %></div>
+                    <div class="stat-label">Concurrents Analysés</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-dark"><%= stats.total_observations %></div>
+                    <div class="stat-label">Observations</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Configuration Pricing -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="mb-0">
+                <h3 class="section-title">
+                    Pondérations des Facteurs ⚙️
+                </h3>
+            </div>
+            <a href="/pricing" class="btn btn-outline-primary">
+                <i class="fas fa-cog me-2"></i>Modifier la Configuration Pricing
+            </a>
+        </div>
+        
+        <div class="row mb-4">
+            <!-- Marge Cible -->
+            <div class="col-md">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-primary"><%= (pricing.MARGE_CIBLE * 100).toFixed(1) %>%</div>
+                    <div class="stat-label">Marge Cible</div>
+                </div>
+            </div>
+            
+            <!-- Marge Minimum -->
+            <div class="col-md">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-warning"><%= (pricing.MIN_MARGIN * 100).toFixed(1) %>%</div>
+                    <div class="stat-label">Marge Minimum</div>
+                </div>
+            </div>
+            
+            <!-- Poids Concurrence -->
+            <div class="col-md">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-info"><%= (pricing.POIDS_CONCURRENTS * 100).toFixed(0) %>%</div>
+                    <div class="stat-label">Poids Concurrence</div>
+                </div>
+            </div>
+            
+            <!-- Poids Marge -->
+            <div class="col-md">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-success"><%= (pricing.POIDS_MARGE * 100).toFixed(0) %>%</div>
+                    <div class="stat-label">Poids Marge</div>
+                </div>
+            </div>
+        
+            <!-- Poids Quartier -->
+            <div class="col-md">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-danger"><%= (pricing.POIDS_QUARTIER * 100).toFixed(0) %>%</div>
+                    <div class="stat-label">Poids Quartier</div>
+                </div>
+            </div>
+            
+            <!-- Poids Influence -->
+            <div class="col-md">
+                <div class="card stat-card bg-light">
+                    <div class="stat-number text-secondary"><%= (pricing.POIDS_INFLUENCE * 100).toFixed(0) %>%</div>
+                    <div class="stat-label">Poids Influence</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Distribution des Prix 📦 -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="section-title">1. Distribution des Prix 📦</h3>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📊 Distribution des Prix optimaux par Type de Soupe selon les quartiers</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">📈 Statistiques de Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="distributionStats">
+                            <p class="text-center loading">Chargement des statistiques...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Analyse Comparative ⚖️ -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="section-title">2. Analyse Comparative ⚖️</h3>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">⚖️ Comparaison des Stratégies de Prix</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">💰 Analyse des Marges</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="marginChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau de Données -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">📊 Données Détaillées</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Soupe</th>
+                                        <th>Quartier</th>
+                                        <th>Concurrents</th>
+                                        <th>Prix Net</th>
+                                        <th>Prix Moyen</th>
+                                        <th>Prix Optimal</th>
+                                        <th>Marge</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% prix_optimaux.forEach(item => { %>
+                                        <tr>
+                                            <td><strong><%= item.soupe %></strong></td>
+                                            <td><%= item.quartier %></td>
+                                            <td><%= item.nb_concurrents %></td>
+                                            <td><%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(item.prix_net) %> Ar</td>
+                                            <td><%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(item.prix_moyen) %> Ar</td>
+                                            <td class="fw-bold text-success"><%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(item.prix_optimal) %> Ar</td>
+                                            <td>
+                                                <span class="badge bg-<%= item.marge_realisee >= 25 ? 'success' : item.marge_realisee >= 15 ? 'warning' : 'danger' %>">
+                                                    <%= item.marge_realisee %>%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script>
+        // Fonctions utilitaires
+        function calculateStats(data, key) {
+            const values = data.map(item => item[key]).filter(val => val != null);
+            if (values.length === 0) return { min: 0, max: 0, avg: 0 };
+            
+            return {
+                min: Math.min(...values),
+                max: Math.max(...values),
+                avg: values.reduce((a, b) => a + b, 0) / values.length
+            };
+        }
+
+        // 1. Distribution des Prix (Version simplifiée)
+        function createDistributionChart(data) {
+            const ctx = document.getElementById('distributionChart').getContext('2d');
+
+            const soupes = [...new Set(data.map(item => item.soupe))];
+            const datasets = soupes.map(soupe => {
+                const soupeData = data.filter(item => item.soupe === soupe);
+                return {
+                    label: soupe,
+                    data: soupeData.map(item => item.prix_optimal),
+                    borderColor: `hsl(${Math.random() * 360}, 70%, 50%)`,
+                    backgroundColor: `hsl(${Math.random() * 360}, 70%, 70%)`,
+                    borderWidth: 1
+                };
+            });
+
+            // Créer labels basés sur les quartiers
+            const quartiers = [...new Set(data.map(item => item.quartier))];
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: quartiers, // <-- ici on met les quartiers
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Prix Optimal (Ar)' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribution des Prix par Type de Soupe'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            // Mise à jour des statistiques
+            updateDistributionStats(data);
+        }
+
+
+        function updateDistributionStats(data) {
+            const soupes = [...new Set(data.map(item => item.soupe))];
+            let statsHTML = '';
+            
+            soupes.forEach(soupe => {
+                const soupeData = data.filter(item => item.soupe === soupe);
+                const prixStats = calculateStats(soupeData, 'prix_optimal');
+                const margeStats = calculateStats(soupeData, 'marge_realisee');
+                
+                statsHTML += `
+                    <div class="mb-3 p-2 border rounded">
+                        <h6 class="fw-bold">${soupe}</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Prix:</small><br>
+                                <span class="badge bg-primary">${new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(prixStats.avg.toFixed(0))}Ar</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Marge:</small><br>
+                                <span class="badge bg-success">${margeStats.avg.toFixed(1)}%</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small>Étendue: ${new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(prixStats.min)}Ar - ${new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(prixStats.max)}Ar</small>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('distributionStats').innerHTML = statsHTML;
+        }
+
+        // 2. Analyse Comparative
+        function createComparisonChart(data) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            const soupes = [...new Set(data.map(item => item.soupe))];
+            const comparisonData = soupes.map(soupe => {
+                const soupeData = data.filter(item => item.soupe === soupe);
+                return {
+                    soupe: soupe,
+                    net: soupeData[0]?.prix_net || 0,
+                    moyen: soupeData.reduce((sum, item) => sum + item.prix_moyen, 0) / soupeData.length,
+                    optimal: soupeData.reduce((sum, item) => sum + item.prix_optimal, 0) / soupeData.length
+                };
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: comparisonData.map(d => d.soupe),
+                    datasets: [
+                        {
+                            label: 'Prix Net',
+                            data: comparisonData.map(d => d.net),
+                            backgroundColor: 'rgba(255, 99, 132, 0.8)'
+                        },
+                        {
+                            label: 'Prix Moyen Marché',
+                            data: comparisonData.map(d => d.moyen),
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                        },
+                        {
+                            label: 'Prix Optimal',
+                            data: comparisonData.map(d => d.optimal),
+                            backgroundColor: 'rgba(75, 192, 192, 0.8)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Prix (Ar)' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Comparaison des Stratégies de Prix'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Graphique des Marges
+        function createMarginChart(data) {
+            const ctx = document.getElementById('marginChart').getContext('2d');
+            
+            const soupes = [...new Set(data.map(item => item.soupe))];
+            const marginData = soupes.map(soupe => {
+                const soupeData = data.filter(item => item.soupe === soupe);
+                return soupeData.reduce((sum, item) => sum + item.marge_realisee, 0) / soupeData.length;
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: soupes,
+                    datasets: [{
+                        label: 'Marge Moyenne (%)',
+                        data: marginData,
+                        backgroundColor: marginData.map(marge => 
+                            marge >= 25 ? '#28a745' : marge >= 15 ? '#ffc107' : '#dc3545'
+                        ),
+                        borderColor: marginData.map(marge => 
+                            marge >= 25 ? '#218838' : marge >= 15 ? '#e0a800' : '#c82333'
+                        ),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Marge (%)' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Marge Moyenne par Type de Soupe'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chargement et initialisation
+        async function initializeDashboard() {
+            try {
+                console.log('Chargement des données...');
+                
+                // Charger les données depuis l'API
+                const response = await axios.get('/dashboard/api/data');
+                const data = response.data;
+                
+                console.log('Données chargées:', data.length, 'éléments');
+                
+                // Créer les graphiques
+                createDistributionChart(data);
+                createComparisonChart(data);
+                createMarginChart(data);
+                
+                console.log('Tous les graphiques initialisés');
+                
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation:', error);
+                // Afficher des messages d'erreur
+                document.querySelectorAll('.chart-container').forEach(container => {
+                    container.innerHTML = '<div class="alert alert-danger">Erreur de chargement des données</div>';
+                });
+            }
+        }
+
+        // Démarrer l'initialisation
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+<%- include('./footer') %>

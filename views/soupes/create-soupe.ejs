@@ -1,0 +1,104 @@
+<%- include('../header', { title: 'Soupes' }) %>
+
+<main class="container pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary">
+          <h2 class="h4 mb-0 text-white"><i class="fas fa-plus-circle me-2"></i>Créer une nouvelle soupe</h2>
+        </div>
+        <div class="card-body">
+          <form action="/soupes/create" method="POST">
+            <div class="mb-4">
+              <label for="soupe_name" class="form-label fw-bold">Nom de la soupe</label>
+              <input type="text" class="form-control form-control-lg" id="soupe_name" name="soupe_name" required placeholder="Ex: Soupe de légumes du marché">
+            </div>
+
+            <div class="mb-4">
+              <h3 class="h5 mb-3 border-bottom pb-2">
+                <i class="fas fa-carrot me-2 text-success"></i>Ingrédients
+              </h3>
+              
+              <% if (ingredients.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Ingrédient</th>
+                        <th>Prix</th>
+                        <th>Quantité nécessaire</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% ingredients.forEach(ing => { %>
+                        <tr>
+                          <td>
+                            <label for="quantite_<%= ing._id %>" class="form-label mb-0">
+                              <%= ing.name %>
+                            </label>
+                          </td>
+                          <td>
+                            <span class="text-muted"><%= ing.prix_unitaire %>Ar / <%= ing.quantite_reference %> <%= ing.unite %></span>
+                          </td>
+                          <td>
+                            <div class="input-group row">
+                              <input type="number" step="0.0001" min="0" class="form-control col" id="quantite_<%= ing._id %>" name="quantite_<%= ing._id %>" placeholder="Quantité en <%= ing.unite %>">
+                              <span class="input-group-text col-2"><%= ing.unite %></span>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="alert alert-warning">
+                  <div class="d-flex">
+                    <div class="me-3">
+                      <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                      <h5 class="alert-heading">Aucun ingrédient disponible</h5>
+                      <p class="mb-0">Vous devez d'abord ajouter des ingrédients avant de pouvoir créer une soupe.</p>
+                    </div>
+                  </div>
+                </div>
+                <a href="/ingredients" class="btn btn-success">
+                  <i class="fas fa-plus me-1"></i>Ajouter des ingrédients
+                </a>
+              <% } %>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a href="/soupes" class="btn btn-secondary me-md-2">
+                <i class="fas fa-arrow-left me-1"></i>Retour
+              </a>
+              <% if (ingredients.length > 0) { %>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Créer la soupe
+                </button>
+              <% } %>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <% if (ingredients.length > 0) { %>
+        <div class="card mt-4 shadow-sm">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0"><i class="fas fa-info-circle me-2 text-info"></i>Conseils de création</h3>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li>Indiquez des quantités précises pour calculer le coût exact de votre soupe</li>
+              <li>Vous pourrez modifier ces valeurs ultérieurement</li>
+              <li>Le prix de vente recommandé sera calculé automatiquement</li>
+            </ul>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../footer') %>

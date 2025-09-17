@@ -1,0 +1,65 @@
+<%- include('../header', { title: 'Ingredients' }) %>
+
+<main class="container pb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+      <i class="fas fa-carrot text-success me-2"></i>Liste des ingrédients
+    </h1>
+    <div>
+      <a href="/soupes" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Voir les soupes
+      </a>
+      <a href="/ingredients/create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Nouvel ingrédient
+      </a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <% if (ingredients.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Quantité de référence</th>
+                <th scope="col">Unité</th>
+                <th scope="col">Prix</th>
+                <th scope="col" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% ingredients.forEach(ing => { %>
+                <tr>
+                  <td class="fw-bold"><%= ing.name %></td>
+                  <td><%= ing.quantite_reference %></td>
+                  <td><span class="badge bg-secondary"><%= ing.unite %></span></td>
+                  <td class="text-nowrap"><%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(ing.prix_unitaire) %> Ar</td>
+                  <td class="text-center">
+                    <a href="/ingredients/edit/<%= ing._id %>" class="btn btn-sm btn-outline-primary">
+                      <i class="fas fa-edit me-1"></i>
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <div class="py-4">
+            <i class="fas fa-carrot fa-3x text-muted mb-3"></i>
+            <h3 class="h5 text-muted">Aucun ingrédient enregistré</h3>
+            <p class="text-muted">Commencez par ajouter votre premier ingrédient</p>
+            <a href="/ingredients/create" class="btn btn-primary mt-2">
+              <i class="fas fa-plus me-1"></i>Ajouter un ingrédient
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../footer') %>

@@ -1,0 +1,126 @@
+<%- include('../header', { title: 'Concurrents' }) %>
+
+<main class="container pb-5">
+  <%- include('./forms/_concurrent-form', { title: 'Liste des Concurrents' }) %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+      <i class="fas fa-store me-2 text-primary"></i>Liste des concurrents
+    </h1>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <% if (concurrents.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Réseaux</th>
+                <th scope="col" class="text-center">Avis</th>
+                <th scope="col" class="text-center">Followers</th>
+                <th scope="col" class="text-center">Rating</th>
+                <th scope="col">Quartier</th>
+                <th scope="col">Prix des soupes</th>
+                <th scope="col" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% concurrents.forEach(c => { 
+                let prixSoupesArray = Array.isArray(c.prix_soupes)
+                  ? c.prix_soupes
+                  : (c.prix_soupes ? Object.values(c.prix_soupes) : []);
+              %>
+                <tr>
+                  <td class="fw-bold"><%= c.nom %></td>
+                  <td>
+                    <div class="d-flex flex-column gap-1">
+                      <% if (c.lien_FB) { %>
+                        <a href="<%= c.lien_FB %>" target="_blank" class="text-decoration-none">
+                          <i class="fab fa-facebook text-primary me-1"></i>
+                          <small>Facebook</small>
+                        </a>
+                      <% } %>
+                      <% if (c.lien_GMap) { %>
+                        <a href="<%= c.lien_GMap %>" target="_blank" class="text-decoration-none">
+                          <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                          <small>Google Maps</small>
+                        </a>
+                      <% } %>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <% if (c.nb_avis) { %>
+                      <span class="badge bg-info"><%= formatK(c.nb_avis) %></span>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <% if (c.followers) { %>
+                      <span class="badge bg-secondary"><%= formatK(c.followers) %></span>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <% if (c.rating) { %>
+                      <span class="badge bg-warning text-dark">
+                        <i class="fas fa-star me-1"></i><%= c.rating %>
+                      </span>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark"><%= c.quartier %></span>
+                  </td>
+                  <td style="max-width: 200px;">
+                    <% if (prixSoupesArray.length === 0) { %>
+                      <span class="text-muted fst-italic">Aucun prix</span>
+                    <% } else { %>
+                      <div class="d-grid gap-1">
+                        <% prixSoupesArray.forEach(ps => { %>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-truncate"><%= ps.soupe %></span>
+                            <span class="badge bg-success ms-2"><%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(ps.prix) %> Ar</span>
+                          </div>
+                        <% }) %>
+                      </div>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <a href="/concurrents/edit/<%= c._id %>" class="btn btn-outline-primary m-1">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <form action="/concurrents/delete/<%= c._id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger m-1" 
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce concurrent ?')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <div class="py-4">
+            <i class="fas fa-store fa-3x text-muted mb-3"></i>
+            <h3 class="h5 text-muted">Aucun concurrent enregistré</h3>
+            <p class="text-muted">Commencez par ajouter votre premier concurrent</p>
+            <a href="/concurrents/create" class="btn btn-primary mt-2">
+              <i class="fas fa-plus me-1"></i>Ajouter un concurrent
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../footer') %>

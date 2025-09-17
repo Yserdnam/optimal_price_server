@@ -1,0 +1,141 @@
+<%- include('../header', { title: 'Concurrents' }) %>
+
+<main class="container pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary">
+          <h2 class="h4 mb-0 text-white">
+            <i class="fas fa-edit me-2"></i>Éditer "<%= concurrent.nom %>"
+          </h2>
+        </div>
+        <div class="card-body">
+          <form action="/concurrents/edit/<%= concurrent._id %>" method="POST">
+            <div class="row">
+              <!-- Colonne gauche - Informations générales -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nom" class="form-label fw-bold">Nom du restaurant <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="nom" name="nom" value="<%= concurrent.nom %>" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="quartier" class="form-label fw-bold">Quartier <span class="text-danger">*</span></label>
+                  <select class="form-select" id="quartier" name="quartier" required>
+                    <option value="" disabled>-- Choisir --</option>
+                    <option value="Centre-ville" <%= concurrent.quartier === 'Centre-ville' ? 'selected' : '' %>>Centre-ville</option>
+                    <option value="Banlieue" <%= concurrent.quartier === 'Banlieue' ? 'selected' : '' %>>Banlieue</option>
+                    <option value="Quartier étudiant" <%= concurrent.quartier === 'Quartier étudiant' ? 'selected' : '' %>>Quartier étudiant</option>
+                    <option value="Quartier populaire" <%= concurrent.quartier === 'Quartier populaire' ? 'selected' : '' %>>Quartier populaire</option>
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="rating" class="form-label fw-bold">Rating</label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" id="rating" name="rating" step="0.1" min="0" max="5" 
+                           value="<%= concurrent.rating %>" placeholder="4.5">
+                    <span class="input-group-text">/5</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Colonne droite - Liens et statistiques -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="lien_FB" class="form-label fw-bold">Lien page Facebook</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fab fa-facebook text-primary"></i></span>
+                    <input type="url" class="form-control" id="lien_FB" name="lien_FB" 
+                           value="<%= concurrent.lien_FB %>" placeholder="https://facebook.com/restaurant">
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="lien_GMap" class="form-label fw-bold">Lien Google Maps</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt text-danger"></i></span>
+                    <input type="url" class="form-control" id="lien_GMap" name="lien_GMap" 
+                           value="<%= concurrent.lien_GMap %>" placeholder="https://goo.gl/maps/...">
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="nb_avis" class="form-label fw-bold">Nombre d'avis</label>
+                    <input type="number" class="form-control" id="nb_avis" name="nb_avis" 
+                           value="<%= concurrent.nb_avis %>" min="0">
+                  </div>
+                  
+                  <div class="col-md-6 mb-3">
+                    <label for="followers" class="form-label fw-bold">Followers</label>
+                    <input type="number" class="form-control" id="followers" name="followers" 
+                           value="<%= concurrent.followers %>" min="0">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Section Prix des soupes -->
+            <div class="mt-4 pt-3 border-top">
+              <h3 class="h5 mb-3">
+                <i class="fas fa-soup text-warning me-2"></i>Prix des soupes
+              </h3>
+              
+              <% if (soupes.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Soupe</th>
+                        <th class="text-center">Prix (Ar)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% soupes.forEach(soupe => { 
+                        let prix = "";
+                        if (concurrent.prix_soupes) {
+                          const found = concurrent.prix_soupes.find(ps => ps.soupe === soupe.name);
+                          if (found) prix = found.prix;
+                        }
+                      %>
+                        <tr>
+                          <td class="fw-bold"><%= soupe.name %></td>
+                          <td class="text-center" style="max-width: 120px;">
+                            <input type="hidden" name="soupe" value="<%= soupe.name %>">
+                            <div class="input-group input-group-sm">
+                              <input type="number" step="0.01" class="form-control" name="prix" value="<%= prix %>" placeholder="0.00">
+                              <span class="input-group-text">Ar</span>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle me-2"></i>Aucune soupe enregistrée. Vous devez d'abord créer des soupes pour pouvoir définir leurs prix.
+                </div>
+              <% } %>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <small class="text-muted"><span class="text-danger">*</span> Champs obligatoires</small>
+              <div>
+                <a href="/concurrents" class="btn btn-secondary me-2">
+                  <i class="fas fa-arrow-left me-1"></i>Annuler
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Enregistrer
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../footer') %>

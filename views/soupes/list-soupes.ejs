@@ -1,0 +1,82 @@
+<%- include('../header', { title: 'Soupes' }) %>
+
+<main class="container pb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Liste des soupes</h2>
+    <div>
+      <a href="/soupes/create" class="btn btn-primary">
+        <i class="fas fa-plus-circle me-1"></i>Créer une nouvelle soupe
+      </a>
+      <a href="/ingredients" class="btn btn-outline-secondary ms-2">
+        <i class="fas fa-carrot me-1"></i>Voir les ingrédients
+      </a>
+    </div>
+  </div>
+
+  <% if (soupes.length === 0) { %>
+    <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle fa-2x mb-3"></i>
+      <h4>Aucune soupe enregistrée</h4>
+      <p>Commencez par créer votre première soupe.</p>
+      <a href="/soupes/create" class="btn btn-primary mt-2">
+        <i class="fas fa-plus me-1"></i>Créer une soupe
+      </a>
+    </div>
+  <% } else { %>
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">Nom</th>
+                <th scope="col" class="text-end">Coût net (MGA)</th>
+                <th scope="col" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% soupes.forEach(soupe => { %>
+                <tr>
+                  <td class="align-middle">
+                    <i class="fas fa-utensil-spoon text-primary me-2"></i>
+                    <%= soupe.name %>
+                  </td>
+                  <td class="align-middle text-end fw-bold">
+                    <%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(soupe.prix_net.toFixed(2)) %> Ar
+                  </td>
+                  <td class="align-middle text-center">
+                    <div class="btn-group" role="group">
+                      <a href="/soupes/edit/<%= soupe._id %>" class="btn btn-sm btn-outline-primary m-1" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <a href="/soupes/delete/<%= soupe._id %>" class="btn btn-sm btn-outline-danger m-1" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette soupe ?')">
+                        <i class="fas fa-trash-alt"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+            <tfoot>
+              <tr class="table-active">
+                <th class="text-end">Total:</th>
+                <th class="text-end">
+                  <%= new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(soupes.reduce((total, soupe) => total + soupe.prix_net, 0).toFixed(2)) %> Ar
+                </th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <div class="text-muted">
+        Affichage de <strong><%= soupes.length %></strong> soupe<%= soupes.length > 1 ? 's' : '' %>
+      </div>
+    </div>
+  <% } %>
+</main>
+
+<%- include('../footer') %>

@@ -1,0 +1,82 @@
+<%- include('../header', { title: 'Quartier' }) %>
+
+<main class="container pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary">
+          <h2 class="h4 mb-0 text-white">
+            <i class="fas fa-plus-circle me-2"></i>Créer un nouveau quartier
+          </h2>
+        </div>
+        <div class="card-body">
+          <form action="/quartiers/create" method="POST">
+            <div class="mb-4">
+              <label for="nom" class="form-label fw-bold">
+                <i class="fas fa-map-marker-alt text-muted me-1"></i>Nom du quartier
+                <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control form-control-lg" id="nom" name="nom" required 
+                     placeholder="Ex: Centre-ville, Quartier étudiant, Banlieue nord...">
+              <div class="form-text">Choisissez un nom clair et descriptif pour le quartier</div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="poids" class="form-label fw-bold">
+                <i class="fas fa-weight-hanging text-muted me-1"></i>Poids d'importance
+                <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="form-control" id="poids" name="poids" step="0.01" min="0.01" required 
+                       placeholder="Ex: 1.5, 2.0, 0.8...">
+                <span class="input-group-text">
+                  <i class="fas fa-info" data-bs-toggle="tooltip" 
+                     title="Plus le poids est élevé, plus le quartier est considéré comme important"></i>
+                </span>
+              </div>
+              <div class="form-text">Détermine l'importance relative de ce quartier dans les analyses</div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a href="/quartiers" class="btn btn-secondary me-md-2">
+                <i class="fas fa-arrow-left me-1"></i>Annuler
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i>Créer le quartier
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-light">
+          <h3 class="h5 mb-0">
+            <i class="fas fa-info-circle me-2 text-info"></i>À propos des poids de quartier
+          </h3>
+        </div>
+        <div class="card-body">
+          <p class="mb-2">Le poids attribué à un quartier influence son importance dans les analyses concurrentielles :</p>
+          <ul class="mb-0">
+            <li><strong>Poids élevé (ex: 2.0)</strong> : Quartier très important stratégiquement</li>
+            <li><strong>Poids moyen (ex: 1.0)</strong> : Quartier d'importance standard</li>
+            <li><strong>Poids faible (ex: 0.5)</strong> : Quartier moins prioritaire</li>
+          </ul>
+          <p class="mt-3 mb-0"><small>Ces poids sont utilisés pour pondérer les données dans les calculs statistiques.</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Activation des tooltips Bootstrap
+  document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  })
+</script>
+
+<%- include('../footer') %>
